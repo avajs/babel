@@ -16,6 +16,22 @@
   "scripts": {
     "test": "xo && nyc ava"
   },
+  "dependencies": {
+    "@ava/babel-preset-stage-4": "^4.0.0",
+    "@ava/babel-preset-transform-test-files": "^6.0.0",
+    "@babel/core": "^7.6.4",
+    "concordance": "^4.0.0",
+    "convert-source-map": "^1.6.0",
+    "find-up": "^4.1.0",
+    "is-plain-object": "^3.0.0",
+    "md5-hex": "^3.0.1",
+    "package-hash": "^4.0.0",
+    "pkg-conf": "^3.1.0",
+    "require-precompiled": "^0.1.0",
+    "source-map-support": "^0.5.13",
+    "strip-bom-buf": "^2.0.0",
+    "write-file-atomic": "^3.0.0"
+  },
   "devDependencies": {
     "ava": "^2.4.0",
     "nyc": "^14.1.1",
