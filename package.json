@@ -1,0 +1,31 @@
+{
+  "name": "@ava/babel",
+  "version": "0.0.0",
+  "description": "Babel provider for AVA",
+  "files": [
+    "index.js",
+    "stage-4.js"
+  ],
+  "author": "Mark Wubben (https://novemberborn.net)",
+  "repository": "avajs/babel",
+  "license": "MIT",
+  "keywords": [
+    "ava",
+    "babel"
+  ],
+  "scripts": {
+    "test": "xo && nyc ava"
+  },
+  "devDependencies": {
+    "ava": "^2.4.0",
+    "nyc": "^14.1.1",
+    "xo": "^0.25.3"
+  },
+  "nyc": {
+    "reporter": [
+      "html",
+      "lcov",
+      "text"
+    ]
+  }
+}

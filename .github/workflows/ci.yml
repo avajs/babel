@@ -1,0 +1,30 @@
+name: Install and test @ava/babel
+on: push
+jobs:
+  nodejs:
+    name: Node.js
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Hardcoded versions due to https://github.com/actions/setup-node/issues/27,
+        # which means that sometimes too old a version gets installed.
+        node-version: [8.16.1, ^10.0.0, ^12.0.0]
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - name: Enable symlinks
+        if: matrix.os == 'windows-latest'
+        run: |
+          git config core.symlinks true
+          git reset --hard
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install --no-audit
+      - run: npm test
+      - run: npx codecov --file=./coverage/lcov.info
+        env:
+          CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
