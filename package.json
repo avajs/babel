@@ -34,8 +34,15 @@
   },
   "devDependencies": {
     "ava": "^2.4.0",
+    "execa": "^3.2.0",
     "nyc": "^14.1.1",
     "xo": "^0.25.3"
+  },
+  "ava": {
+    "files": [
+      "test/**/*.js",
+      "!test/fixtures/**/*.js"
+    ]
   },
   "nyc": {
     "reporter": [
