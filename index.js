@@ -312,49 +312,51 @@ module.exports = ({negotiateProtocol}) => {
 		};
 
 		return {
-			validateConfig(babelConfig, compileEnhancements, enhancementsOnly) {
-				// Never enable when used as the full compilation provider if Babel is disabled.
-				if (babelConfig === false && !enhancementsOnly) {
-					return;
-				}
+			validateConfig({babelConfig, compileEnhancements, enhancementsOnly}) {
+				if (enhancementsOnly) {
+					// Never enable the enhancements-only provider when enhancement compilation is disabled.
+					if (!compileEnhancements) {
+						return;
+					}
 
-				// Never enable when both are false.
-				if (babelConfig === false && !compileEnhancements) {
-					return;
-				}
-
-				const defaultOptions = {babelrc: true, configFile: true};
-
-				// Only for the legacy protocol is `validateConfig()` called with a
-				// `babelConfig` that is `undefined`.
-				if (babelConfig === undefined) {
-					validConfig = {
-						compileEnhancements,
-						extensions: [],
-						testOptions: defaultOptions
-					};
-				} else if (babelConfig === false) {
 					validConfig = {
 						compileEnhancements,
 						extensions: [],
 						testOptions: false
 					};
 				} else {
-					if (
-						!isPlainObject(babelConfig) ||
-						!Object.keys(babelConfig).every(key => key === 'extensions' || key === 'testOptions') ||
-						(babelConfig.extensions !== undefined && !isValidExtensions(babelConfig.extensions)) ||
-						(babelConfig.testOptions !== undefined && !isPlainObject(babelConfig.testOptions))
-					) {
-						throw new Error(`Unexpected Babel configuration for AVA. See https://github.com/avajs/ava/blob/v${protocol.ava.version}/docs/recipes/babel.md for allowed values.`);
+					// Never enable when used as the full compilation provider if Babel is disabled.
+					if (babelConfig === false) {
+						return;
 					}
 
-					const {extensions = [], testOptions} = babelConfig;
-					validConfig = {
-						compileEnhancements,
-						extensions,
-						testOptions: {...defaultOptions, ...testOptions}
-					};
+					const defaultOptions = {babelrc: true, configFile: true};
+
+					// Only for the legacy protocol is `validateConfig()` called with a
+					// `babelConfig` that is `undefined`.
+					if (babelConfig === undefined) {
+						validConfig = {
+							compileEnhancements,
+							extensions: [],
+							testOptions: defaultOptions
+						};
+					} else {
+						if (
+							!isPlainObject(babelConfig) ||
+							!Object.keys(babelConfig).every(key => key === 'extensions' || key === 'testOptions') ||
+							(babelConfig.extensions !== undefined && !isValidExtensions(babelConfig.extensions)) ||
+							(babelConfig.testOptions !== undefined && !isPlainObject(babelConfig.testOptions))
+						) {
+							throw new Error(`Unexpected Babel configuration for AVA. See https://github.com/avajs/ava/blob/v${protocol.ava.version}/docs/recipes/babel.md for allowed values.`);
+						}
+
+						const {extensions = [], testOptions} = babelConfig;
+						validConfig = {
+							compileEnhancements,
+							extensions,
+							testOptions: {...defaultOptions, ...testOptions}
+						};
+					}
 				}
 
 				enabled = true;
