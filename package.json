@@ -1,6 +1,6 @@
 {
   "name": "@ava/babel",
-  "version": "0.0.0-1",
+  "version": "0.0.0",
   "description": "Babel provider for AVA",
   "files": [
     "index.js",
