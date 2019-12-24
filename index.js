@@ -2,8 +2,10 @@
 const fs = require('fs');
 const path = require('path');
 const babel = require('@babel/core');
+const {default: generate} = require('@babel/generator');
 const concordance = require('concordance');
 const convertSourceMap = require('convert-source-map');
+const dotProp = require('dot-prop');
 const findUp = require('find-up');
 const isPlainObject = require('is-plain-object');
 const md5Hex = require('md5-hex');
@@ -13,6 +15,25 @@ const installPrecompiler = require('require-precompiled');
 const sourceMapSupport = require('source-map-support');
 const stripBomBuf = require('strip-bom-buf');
 const writeFileAtomic = require('write-file-atomic');
+
+const computeStatement = node => generate(node).code;
+const getNode = (ast, path) => dotProp.get(ast, path.replace(/\//g, '.'));
+
+const powerAssert = {
+	empower: require('empower-core'),
+	format(context, format) {
+		const ast = JSON.parse(context.source.ast);
+		const args = context.args[0].events;
+		return args
+			.map(arg => {
+				const node = getNode(ast, arg.espath);
+				const statement = computeStatement(node);
+				const formatted = format(arg.value);
+				return [statement, formatted];
+			})
+			.reverse();
+	}
+};
 
 function getSourceMap(filePath, code) {
 	let sourceMap = convertSourceMap.fromSource(code);
@@ -412,6 +433,7 @@ module.exports = ({negotiateProtocol}) => {
 		isEnabled,
 		getExtensions,
 		compile,
-		installHook
+		installHook,
+		powerAssert
 	};
 };
