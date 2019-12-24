@@ -103,6 +103,6 @@ test('compile: compiles all files', withProvider, (t, provider) => {
 
 test('installHook: load compiled files', withProvider, async (t, provider) => {
 	const {state} = compile(provider);
-	const {stdout} = await execa.node(path.join(__dirname, 'fixtures/install-and-load'), ['legacy', JSON.stringify(state)]);
+	const {stdout} = await execa.node(path.join(__dirname, 'fixtures/install-and-load'), ['noBabelOutOfTheBox', JSON.stringify(state)]);
 	t.snapshot(stdout);
 });

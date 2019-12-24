@@ -19,22 +19,6 @@ const writeFileAtomic = require('write-file-atomic');
 const computeStatement = node => generate(node).code;
 const getNode = (ast, path) => dotProp.get(ast, path.replace(/\//g, '.'));
 
-const powerAssert = {
-	empower: require('empower-core'),
-	format(context, format) {
-		const ast = JSON.parse(context.source.ast);
-		const args = context.args[0].events;
-		return args
-			.map(arg => {
-				const node = getNode(ast, arg.espath);
-				const statement = computeStatement(node);
-				const formatted = format(arg.value);
-				return [statement, formatted];
-			})
-			.reverse();
-	}
-};
-
 function getSourceMap(filePath, code) {
 	let sourceMap = convertSourceMap.fromSource(code);
 
@@ -280,19 +264,15 @@ function installSourceMapSupport(state) {
 	});
 }
 
-function installHook(state) {
-	installSourceMapSupport(state);
-
-	installPrecompiler(filename => {
-		const precompiled = state[filename];
-		return precompiled ?
-			fs.readFileSync(precompiled, 'utf8') :
-			null;
-	});
+function isValidExtensions(extensions) {
+	return Array.isArray(extensions) &&
+		extensions.length > 0 &&
+		extensions.every(ext => typeof ext === 'string' && ext !== '') &&
+		new Set(extensions).size === extensions.length;
 }
 
 module.exports = ({negotiateProtocol}) => {
-	const protocol = negotiateProtocol(['legacy', 'noBabelOutOfTheBox']);
+	const protocol = negotiateProtocol(['noBabelOutOfTheBox']);
 	if (protocol === null) {
 		return;
 	}
@@ -300,102 +280,7 @@ module.exports = ({negotiateProtocol}) => {
 	let enabled = false;
 	let validConfig;
 
-	const isEnabled = () => enabled;
-	const getExtensions = () => enabled ? [...validConfig.extensions] : [];
-
 	let compileFile;
-	const compile = ({cacheDir, testFiles, helperFiles}) => {
-		if (!compileFile) {
-			compileFile = createCompileFn({
-				babelOptions: validConfig.testOptions,
-				cacheDir,
-				compileEnhancements: validConfig.compileEnhancements,
-				projectDir: protocol.projectDir
-			});
-		}
-
-		const state = {};
-		for (const file of [...testFiles, ...helperFiles]) {
-			try {
-				state[file] = compileFile(file);
-			} catch (error) {
-				throw Object.assign(error, {file});
-			}
-		}
-
-		return state;
-	};
-
-	if (protocol.identifier === 'legacy') {
-		const isValidExtensions = extensions => {
-			return Array.isArray(extensions) &&
-				extensions.every(ext => typeof ext === 'string' && ext !== '');
-		};
-
-		return {
-			validateConfig({babelConfig, compileEnhancements, enhancementsOnly}) {
-				if (enhancementsOnly) {
-					// Never enable the enhancements-only provider when enhancement compilation is disabled.
-					if (!compileEnhancements) {
-						return;
-					}
-
-					validConfig = {
-						compileEnhancements,
-						extensions: [],
-						testOptions: false
-					};
-				} else {
-					// Never enable when used as the full compilation provider if Babel is disabled.
-					if (babelConfig === false) {
-						return;
-					}
-
-					const defaultOptions = {babelrc: true, configFile: true};
-
-					// Only for the legacy protocol is `validateConfig()` called with a
-					// `babelConfig` that is `undefined`.
-					if (babelConfig === undefined) {
-						validConfig = {
-							compileEnhancements,
-							extensions: [],
-							testOptions: defaultOptions
-						};
-					} else {
-						if (
-							!isPlainObject(babelConfig) ||
-							!Object.keys(babelConfig).every(key => key === 'extensions' || key === 'testOptions') ||
-							(babelConfig.extensions !== undefined && !isValidExtensions(babelConfig.extensions)) ||
-							(babelConfig.testOptions !== undefined && !isPlainObject(babelConfig.testOptions))
-						) {
-							throw new Error(`Unexpected Babel configuration for AVA. See https://github.com/avajs/ava/blob/v${protocol.ava.version}/docs/recipes/babel.md for allowed values.`);
-						}
-
-						const {extensions = [], testOptions} = babelConfig;
-						validConfig = {
-							compileEnhancements,
-							extensions,
-							testOptions: {...defaultOptions, ...testOptions}
-						};
-					}
-				}
-
-				enabled = true;
-			},
-
-			isEnabled,
-			getExtensions,
-			compile,
-			installHook
-		};
-	}
-
-	const isValidExtensions = extensions => {
-		return Array.isArray(extensions) &&
-			extensions.length > 0 &&
-			extensions.every(ext => typeof ext === 'string' && ext !== '') &&
-			new Set(extensions).size === extensions.length;
-	};
 
 	return {
 		validateConfig(babelConfig) {
@@ -430,10 +315,61 @@ module.exports = ({negotiateProtocol}) => {
 			};
 		},
 
-		isEnabled,
-		getExtensions,
-		compile,
-		installHook,
-		powerAssert
+		isEnabled() {
+			return enabled;
+		},
+
+		getExtensions() {
+			return enabled ? [...validConfig.extensions] : [];
+		},
+
+		compile({cacheDir, testFiles, helperFiles}) {
+			if (!compileFile) {
+				compileFile = createCompileFn({
+					babelOptions: validConfig.testOptions,
+					cacheDir,
+					compileEnhancements: validConfig.compileEnhancements,
+					projectDir: protocol.projectDir
+				});
+			}
+
+			const state = {};
+			for (const file of [...testFiles, ...helperFiles]) {
+				try {
+					state[file] = compileFile(file);
+				} catch (error) {
+					throw Object.assign(error, {file});
+				}
+			}
+
+			return state;
+		},
+
+		installHook(state) {
+			installSourceMapSupport(state);
+
+			installPrecompiler(filename => {
+				const precompiled = state[filename];
+				return precompiled ?
+					fs.readFileSync(precompiled, 'utf8') :
+					null;
+			});
+		},
+
+		powerAssert: {
+			empower: require('empower-core'),
+			format(context, format) {
+				const ast = JSON.parse(context.source.ast);
+				const args = context.args[0].events;
+				return args
+					.map(arg => {
+						const node = getNode(ast, arg.espath);
+						const statement = computeStatement(node);
+						const formatted = format(arg.value);
+						return [statement, formatted];
+					})
+					.reverse();
+			}
+		}
 	};
 };
