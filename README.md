@@ -109,7 +109,7 @@ You can disable AVA's stage-4 preset.
 		"babel": {
 			"testOptions": {
 				"presets": [
-					["module:ava/stage-4", false]
+					["module:@ava/babel/stage-4", false]
 				]
 			}
 		}
@@ -133,7 +133,7 @@ By default AVA's stage-4 preset will convert ES module syntax to CommonJS. This 
 		"babel": {
 			"testOptions": {
 				"presets": [
-					["module:ava/stage-4", {"modules": false}]
+					["module:@ava/babel/stage-4", {"modules": false}]
 				]
 			}
 		}
