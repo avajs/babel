@@ -2,6 +2,7 @@ const os = require('os');
 const path = require('path');
 const test = require('ava');
 const execa = require('execa');
+const pkg = require('../package.json');
 const makeProvider = require('..');
 
 const withProvider = (t, run) => run(t, makeProvider({
@@ -11,38 +12,44 @@ const withProvider = (t, run) => run(t, makeProvider({
 	}
 }));
 
+const validateConfig = (t, provider, config) => {
+	const error = t.throws(() => provider.validateConfig(config));
+	error.message = error.message.replace(`v${pkg.version}`, 'v${pkg.version}'); // eslint-disable-line no-template-curly-in-string
+	t.snapshot(error);
+};
+
 test('negotiates noBabelOutOfTheBox protocol', withProvider, t => t.plan(1));
 
 test('validateConfig: throw when babelConfig is not true or a plain object', withProvider, (t, provider) => {
-	t.snapshot(t.throws(() => provider.validateConfig(false)));
-	t.snapshot(t.throws(() => provider.validateConfig(null)));
-	t.snapshot(t.throws(() => provider.validateConfig([])));
+	validateConfig(t, provider, false);
+	validateConfig(t, provider, null);
+	validateConfig(t, provider, []);
 });
 
 test('validateConfig: throw when babelConfig contains keys other than \'compileEnhancements\', \'extensions\' or \'testOptions\'', withProvider, (t, provider) => {
-	t.snapshot(t.throws(() => provider.validateConfig({foo: 1})));
+	validateConfig(t, provider, {foo: 1});
 });
 
 test('validateConfig: throw when babelConfig.compileEnhancements is not a boolean', withProvider, (t, provider) => {
-	t.snapshot(t.throws(() => provider.validateConfig({compileEnhancements: 1})));
+	validateConfig(t, provider, {compileEnhancements: 1});
 });
 
 test('validateConfig: throw when babelConfig.extensions contains empty strings', withProvider, (t, provider) => {
-	t.snapshot(t.throws(() => provider.validateConfig({extensions: ['']})));
+	validateConfig(t, provider, {extensions: ['']});
 });
 
 test('validateConfig: throw when babelConfig.extensions contains non-strings', withProvider, (t, provider) => {
-	t.snapshot(t.throws(() => provider.validateConfig({extensions: [1]})));
+	validateConfig(t, provider, {extensions: [1]});
 });
 
 test('validateConfig: throw when babelConfig.extensions contains duplicates', withProvider, (t, provider) => {
-	t.snapshot(t.throws(() => provider.validateConfig({extensions: ['js', 'js']})));
+	validateConfig(t, provider, {extensions: ['js', 'js']});
 });
 
 test('validateConfig: throw when babelConfig.testOptions is not a plain object', withProvider, (t, provider) => {
-	t.snapshot(t.throws(() => provider.validateConfig({testOptions: null})));
-	t.snapshot(t.throws(() => provider.validateConfig({testOptions: []})));
-	t.snapshot(t.throws(() => provider.validateConfig({testOptions: true})));
+	validateConfig(t, provider, {testOptions: null});
+	validateConfig(t, provider, {testOptions: []});
+	validateConfig(t, provider, {testOptions: true});
 });
 
 test('validateConfig: babelConfig may be true', withProvider, (t, provider) => {

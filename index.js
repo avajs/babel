@@ -15,6 +15,7 @@ const installPrecompiler = require('require-precompiled');
 const sourceMapSupport = require('source-map-support');
 const stripBomBuf = require('strip-bom-buf');
 const writeFileAtomic = require('write-file-atomic');
+const pkg = require('./package.json');
 
 const computeStatement = node => generate(node).code;
 const getNode = (ast, path) => dotProp.get(ast, path.replace(/\//g, '.'));
@@ -300,7 +301,7 @@ module.exports = ({negotiateProtocol}) => {
 			}
 
 			if (!valid) {
-				throw new Error(`Unexpected Babel configuration for AVA. See https://github.com/avajs/ava/blob/v${protocol.ava.version}/docs/recipes/babel.md for allowed values.`);
+				throw new Error(`Unexpected Babel configuration for AVA. See https://github.com/avajs/babel/blob/v${pkg.version}/README.md for allowed values.`);
 			}
 
 			enabled = true;
