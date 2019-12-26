@@ -1,6 +1,6 @@
 # @ava/babel
 
-Adds [Babel 7](https://babeljs.io) support to [AVA](https://avajs.dev) so you can use the latest JavaScript syntax in your tests. We do this by compiling test and helper files using our [`@ava/stage-4`](https://github.com/avajs/babel-preset-stage-4) preset. We also use a [second preset, `@ava/transform-test-files`](https://github.com/avajs/babel-preset-transform-test-files) to enable [enhanced assertion messages](../03-assertions.md#enhanced-assertion-messages) and detect improper use of `t.throws()` assertions.
+Adds [Babel 7](https://babeljs.io) support to [AVA](https://avajs.dev) so you can use the latest JavaScript syntax in your tests. We do this by compiling test and helper files using our [`@ava/stage-4`](https://github.com/avajs/babel-preset-stage-4) preset. We also use a [second preset, `@ava/transform-test-files`](https://github.com/avajs/babel-preset-transform-test-files) to enable [enhanced assertion messages](https://github.com/avajs/ava/blob/master/docs/03-assertions.md#enhanced-assertion-messages) and detect improper use of `t.throws()` assertions.
 
 By default our Babel pipeline is applied to test and helper files ending in `.js`. If your project uses Babel then we'll automatically compile these files using your project's Babel configuration. The `@ava/transform-helper-files` preset is applied first, and the `@ava/stage-4` last.
 
