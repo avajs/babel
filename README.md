@@ -1,6 +1,6 @@
 # @ava/babel
 
-Translations: [Français](https://github.com/avajs/ava-docs/tree/master/fr_FR/related/babel)
+Translations: [Français](https://github.com/avajs/ava-docs/tree/master/fr_FR/related/babel/README.md)
 
 Adds [Babel 7](https://babeljs.io) support to [AVA](https://avajs.dev) so you can use the latest JavaScript syntax in your tests. We do this by compiling test and helper files using our [`@ava/stage-4`](https://github.com/avajs/babel-preset-stage-4) preset. We also use a [second preset, `@ava/transform-test-files`](https://github.com/avajs/babel-preset-transform-test-files) to enable [enhanced assertion messages](../03-assertions.md#enhanced-assertion-messages) and detect improper use of `t.throws()` assertions.
 
