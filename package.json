@@ -28,6 +28,7 @@
     "convert-source-map": "^1.7.0",
     "dot-prop": "^5.2.0",
     "empower-core": "^1.2.0",
+    "escape-string-regexp": "^2.0.0",
     "find-up": "^4.1.0",
     "is-plain-object": "^3.0.0",
     "md5-hex": "^3.0.1",

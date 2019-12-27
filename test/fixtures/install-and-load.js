@@ -7,5 +7,4 @@ const provider = makeProvider({
 	}
 });
 
-provider.installHook(JSON.parse(process.argv[3]));
-require('./esm-import'); // eslint-disable-line import/no-unassigned-import
+provider.worker({state: JSON.parse(process.argv[3])}).load('./esm-import', {requireFn: require});
