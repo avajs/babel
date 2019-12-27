@@ -6,6 +6,7 @@ const {default: generate} = require('@babel/generator');
 const concordance = require('concordance');
 const convertSourceMap = require('convert-source-map');
 const dotProp = require('dot-prop');
+const escapeStringRegexp = require('escape-string-regexp');
 const findUp = require('find-up');
 const isPlainObject = require('is-plain-object');
 const md5Hex = require('md5-hex');
@@ -273,30 +274,25 @@ function isValidExtensions(extensions) {
 }
 
 module.exports = ({negotiateProtocol}) => {
-	const protocol = negotiateProtocol(['noBabelOutOfTheBox']);
+	const protocol = negotiateProtocol(['1']);
 	if (protocol === null) {
 		return;
 	}
 
-	let enabled = false;
-	let validConfig;
-
-	let compileFile;
-
 	return {
-		validateConfig(babelConfig) {
+		main({config}) {
 			let valid = false;
-			if (babelConfig === true) {
+			if (config === true) {
 				valid = true;
-			} else if (isPlainObject(babelConfig)) {
-				const keys = Object.keys(babelConfig);
+			} else if (isPlainObject(config)) {
+				const keys = Object.keys(config);
 				if (keys.length === 0) {
 					valid = true;
 				} else if (keys.every(key => key === 'compileEnhancements' || key === 'extensions' || key === 'testOptions')) {
 					valid =
-						(babelConfig.compileEnhancements === undefined || typeof babelConfig.compileEnhancements === 'boolean') &&
-						(babelConfig.extensions === undefined || isValidExtensions(babelConfig.extensions)) &&
-						(babelConfig.testOptions === undefined || babelConfig.testOptions === false || isPlainObject(babelConfig.testOptions));
+						(config.compileEnhancements === undefined || typeof config.compileEnhancements === 'boolean') &&
+						(config.extensions === undefined || isValidExtensions(config.extensions)) &&
+						(config.testOptions === undefined || config.testOptions === false || isPlainObject(config.testOptions));
 				}
 			}
 
@@ -304,73 +300,83 @@ module.exports = ({negotiateProtocol}) => {
 				throw new Error(`Unexpected Babel configuration for AVA. See https://github.com/avajs/babel/blob/v${pkg.version}/README.md for allowed values.`);
 			}
 
-			enabled = true;
+			const {
+				compileEnhancements = true,
+				extensions = ['js'],
+				testOptions
+			} = config;
 
-			const {compileEnhancements = true, extensions = ['js'], testOptions} = babelConfig;
-			validConfig = {
-				compileEnhancements,
-				extensions,
-				testOptions: testOptions === false ?
-					false :
-					{babelrc: true, configFile: true, ...testOptions}
+			const testFileExtension = new RegExp(`\\.(${extensions.map(ext => escapeStringRegexp(ext)).join('|')})$`);
+
+			let compileFile;
+			return {
+				compile({cacheDir, testFiles, helperFiles}) {
+					if (!compileFile) {
+						compileFile = createCompileFn({
+							babelOptions: testOptions === false ? false : {babelrc: true, configFile: true, ...testOptions},
+							cacheDir,
+							compileEnhancements,
+							projectDir: protocol.projectDir
+						});
+					}
+
+					let compiledAnything = false;
+					const state = {};
+					for (const file of [...testFiles, ...helperFiles]) {
+						if (!testFileExtension.test(file)) {
+							continue;
+						}
+
+						try {
+							state[file] = compileFile(file);
+							compiledAnything = true;
+						} catch (error) {
+							throw Object.assign(error, {file});
+						}
+					}
+
+					return compiledAnything ? state : null;
+				},
+
+				get extensions() {
+					return extensions.slice();
+				}
 			};
 		},
 
-		isEnabled() {
-			return enabled;
-		},
-
-		getExtensions() {
-			return enabled ? [...validConfig.extensions] : [];
-		},
-
-		compile({cacheDir, testFiles, helperFiles}) {
-			if (!compileFile) {
-				compileFile = createCompileFn({
-					babelOptions: validConfig.testOptions,
-					cacheDir,
-					compileEnhancements: validConfig.compileEnhancements,
-					projectDir: protocol.projectDir
-				});
-			}
-
-			const state = {};
-			for (const file of [...testFiles, ...helperFiles]) {
-				try {
-					state[file] = compileFile(file);
-				} catch (error) {
-					throw Object.assign(error, {file});
-				}
-			}
-
-			return state;
-		},
-
-		installHook(state) {
+		worker({state}) {
 			installSourceMapSupport(state);
 
 			installPrecompiler(filename => {
-				const precompiled = state[filename];
-				return precompiled ?
-					fs.readFileSync(precompiled, 'utf8') :
-					null;
+				return Reflect.has(state, filename) ? fs.readFileSync(state[filename], 'utf8') : null;
 			});
-		},
 
-		powerAssert: {
-			empower: require('empower-core'),
-			format(context, format) {
-				const ast = JSON.parse(context.source.ast);
-				const args = context.args[0].events;
-				return args
-					.map(arg => {
-						const node = getNode(ast, arg.espath);
-						const statement = computeStatement(node);
-						const formatted = format(arg.value);
-						return [statement, formatted];
-					})
-					.reverse();
-			}
+			return {
+				canLoad(ref) {
+					return Reflect.has(state, ref);
+				},
+
+				load(ref, {requireFn}) {
+					// Let the precompiler hook resolve the compiled source.
+					return requireFn(ref);
+				},
+
+				powerAssert: {
+					empower: require('empower-core'),
+					format(context, format) {
+						const ast = JSON.parse(context.source.ast);
+						const args = context.args[0].events;
+						return args
+							.map(arg => {
+								const node = getNode(ast, arg.espath);
+								const statement = computeStatement(node);
+								const formatted = format(arg.value);
+								return [statement, formatted];
+							})
+							.reverse();
+					}
+				}
+			};
 		}
 	};
 };
