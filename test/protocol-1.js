@@ -8,7 +8,15 @@ const makeProvider = require('..');
 const withProvider = (t, run) => run(t, makeProvider({
 	negotiateProtocol(identifiers) {
 		t.true(identifiers.includes('1'));
-		return {identifier: '1', ava: {version: '2.4.0'}, projectDir: __dirname};
+		return {
+			ava: {version: '2.4.0'},
+			identifier: '1',
+			normalizeGlobPatterns: patterns => patterns,
+			async findFiles({patterns}) {
+				return patterns.map(file => path.join(__dirname, file));
+			},
+			projectDir: __dirname
+		};
 	}
 }));
 
@@ -74,7 +82,7 @@ test('main() extensions: always returns new arrays', withProvider, (t, provider)
 	t.not(main.extensions, main.extensions);
 });
 
-const compile = provider => {
+const compile = async provider => {
 	const cacheDir = os.tmpdir();
 	const testFile = path.join(__dirname, 'fixtures/esm-export.js');
 	const helperFile = path.join(__dirname, 'fixtures/esm-import.js');
@@ -83,22 +91,25 @@ const compile = provider => {
 		cacheDir,
 		testFile,
 		helperFile,
-		state: provider.main({config: true}).compile({
+		state: await provider.main({
+			config: {
+				compileAsTests: ['fixtures/esm-import.js']
+			}
+		}).compile({
 			cacheDir,
-			testFiles: [testFile],
-			helperFiles: [helperFile]
+			files: [testFile]
 		})
 	};
 };
 
-test('main() compile: compiles all files', withProvider, (t, provider) => {
-	const {cacheDir, testFile, helperFile, state} = compile(provider);
+test('main() compile: compiles all files', withProvider, async (t, provider) => {
+	const {cacheDir, testFile, helperFile, state} = await compile(provider);
 	t.assert(state[testFile].startsWith(cacheDir));
 	t.assert(state[helperFile].startsWith(cacheDir));
 });
 
 test('worker(): load compiled files', withProvider, async (t, provider) => {
-	const {state} = compile(provider);
+	const {state} = await compile(provider);
 	const {stdout} = await execa.node(path.join(__dirname, 'fixtures/install-and-load'), ['1', JSON.stringify(state)]);
 	t.snapshot(stdout);
 });
