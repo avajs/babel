@@ -273,6 +273,10 @@ function isValidExtensions(extensions) {
 		new Set(extensions).size === extensions.length;
 }
 
+function isValidPatterns(patterns) {
+	return Array.isArray(patterns) && patterns.length > 0 && patterns.every(pattern => typeof pattern === 'string');
+}
+
 module.exports = ({negotiateProtocol}) => {
 	const protocol = negotiateProtocol(['1']);
 	if (protocol === null) {
@@ -288,8 +292,9 @@ module.exports = ({negotiateProtocol}) => {
 				const keys = Object.keys(config);
 				if (keys.length === 0) {
 					valid = true;
-				} else if (keys.every(key => key === 'compileEnhancements' || key === 'extensions' || key === 'testOptions')) {
+				} else if (keys.every(key => key === 'compileAsTests' || key === 'compileEnhancements' || key === 'extensions' || key === 'testOptions')) {
 					valid =
+						(config.compileAsTests === undefined || isValidPatterns(config.compileAsTests)) &&
 						(config.compileEnhancements === undefined || typeof config.compileEnhancements === 'boolean') &&
 						(config.extensions === undefined || isValidExtensions(config.extensions)) &&
 						(config.testOptions === undefined || config.testOptions === false || isPlainObject(config.testOptions));
@@ -301,16 +306,18 @@ module.exports = ({negotiateProtocol}) => {
 			}
 
 			const {
+				compileAsTests = [],
 				compileEnhancements = true,
 				extensions = ['js'],
 				testOptions
 			} = config;
 
+			const additionalPatterns = protocol.normalizeGlobPatterns(compileAsTests);
 			const testFileExtension = new RegExp(`\\.(${extensions.map(ext => escapeStringRegexp(ext)).join('|')})$`);
 
 			let compileFile;
 			return {
-				compile({cacheDir, testFiles, helperFiles}) {
+				async compile({cacheDir, files}) {
 					if (!compileFile) {
 						compileFile = createCompileFn({
 							babelOptions: testOptions === false ? false : {babelrc: true, configFile: true, ...testOptions},
@@ -320,9 +327,11 @@ module.exports = ({negotiateProtocol}) => {
 						});
 					}
 
+					const additionalFiles = additionalPatterns.length > 0 ? await protocol.findFiles({extensions, patterns: additionalPatterns}) : [];
+
 					let compiledAnything = false;
 					const state = {};
-					for (const file of [...testFiles, ...helperFiles]) {
+					for (const file of [...files, ...additionalFiles]) {
 						if (!testFileExtension.test(file)) {
 							continue;
 						}

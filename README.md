@@ -49,6 +49,22 @@ You can override the default Babel configuration AVA uses for test file compilat
 
 All [Babel options] are allowed inside the `testOptions` object.
 
+## Compile additional files
+
+By default, only test files are compiled. You can compile additional files as tests by providing glob patterns:
+
+**`package.sjon`:**
+
+```json
+{
+	"ava": {
+		"babel": {
+			"compileAsTests": ["test/helpers/**/*"]
+		}
+	}
+}
+```
+
 ## Reset AVA's cache
 
 AVA caches the compiled test and helper files. It automatically recompiles these files when you change them. AVA tries its best to detect changes to your Babel configuration files, plugins and presets. If it seems like your latest Babel configuration isn't being applied, however, you can reset AVA's cache:
