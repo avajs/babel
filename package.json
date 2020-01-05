@@ -6,8 +6,10 @@
     "node": ">=10.18.0 <11 || >=12.14.0 <13 || >=13.5.0"
   },
   "files": [
+    "espower-patterns.json",
     "index.js",
     "stage-4.js",
+    "transform-test-files.js",
     "throws-helper.js",
     "stage-4-plugins"
   ],
@@ -22,7 +24,6 @@
     "test": "xo && nyc ava"
   },
   "dependencies": {
-    "@ava/babel-preset-transform-test-files": "^6.0.0",
     "@babel/core": "^7.7.7",
     "@babel/generator": "^7.7.7",
     "@babel/plugin-proposal-async-generator-functions": "^7.7.4",
@@ -30,6 +31,7 @@
     "@babel/plugin-proposal-optional-catch-binding": "^7.7.4",
     "@babel/plugin-transform-dotall-regex": "^7.7.7",
     "@babel/plugin-transform-modules-commonjs": "^7.7.5",
+    "babel-plugin-espower": "^3.0.1",
     "concordance": "^4.0.0",
     "convert-source-map": "^1.7.0",
     "dot-prop": "^5.2.0",

@@ -163,7 +163,7 @@ function createCompileFn({babelOptions, cacheDir, compileEnhancements, projectDi
 
 	const ensureStage4 = wantsStage4(babelOptions, projectDir);
 	const containsStage4 = makeValueChecker('./stage-4');
-	const containsTransformTestFiles = makeValueChecker('@ava/babel-preset-transform-test-files');
+	const containsTransformTestFiles = makeValueChecker('./transform-test-files');
 
 	const loadOptions = filename => {
 		const partialConfig = babel.loadPartialConfig({
@@ -193,7 +193,7 @@ function createCompileFn({babelOptions, cacheDir, compileEnhancements, projectDi
 
 		if (compileEnhancements && !partialOptions.presets.some(containsTransformTestFiles)) {
 			// Apply first.
-			partialOptions.presets.push(createConfigItem('@ava/babel-preset-transform-test-files', 'preset', {powerAssert: true}));
+			partialOptions.presets.push(createConfigItem('./transform-test-files', 'preset', {powerAssert: true}));
 		}
 
 		const hash = hashPartialConfig(partialConfig, projectDir, pluginAndPresetHashes);
