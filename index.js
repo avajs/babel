@@ -373,7 +373,7 @@ module.exports = ({negotiateProtocol}) => {
 					return Reflect.has(state.lookup, ref);
 				},
 
-				load(ref, {requireFn}) {
+				async load(ref, {requireFn}) {
 					for (const extension of extensionsToLoadAsModules) {
 						if (ref.endsWith(`.${extension}`)) {
 							throw new Error('@ava/babel cannot yet load ESM files');
