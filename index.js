@@ -88,8 +88,7 @@ function wantsStage4(babelOptions, projectDir) {
 		}
 
 		const [ref, options] = arr;
-		// Require the preset given the aliasing `ava/stage-4` does towards
-		// `@ava/babel-preset-stage-4`.
+		// Require the preset to handle any aliasing that may be taking place.
 		const resolved = require(babel.resolvePreset(ref, projectDir));
 		return resolved !== stage4 || options !== false;
 	});
@@ -146,7 +145,7 @@ function createCompileFn({babelOptions, cacheDir, compileEnhancements, projectDi
 
 	// Prepare inputs for caching seeds. Compute a seed based on the Node.js
 	// version and the project directory. Dependency hashes may vary based on the
-	// Node.js version, e.g. with the @ava/stage-4 Babel preset. Certain plugins
+	// Node.js version, e.g. with the stage-4 Babel preset. Certain plugins
 	// and presets are provided as absolute paths, which wouldn't necessarily
 	// be valid if the project directory changes. Also include `envName`, so
 	// options can be cached even if users change BABEL_ENV or NODE_ENV between
