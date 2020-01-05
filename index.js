@@ -370,7 +370,7 @@ module.exports = ({negotiateProtocol}) => {
 
 			return {
 				canLoad(ref) {
-					return Reflect.has(state, ref);
+					return Reflect.has(state.lookup, ref);
 				},
 
 				load(ref, {requireFn}) {
