@@ -2,9 +2,9 @@
 
 Translations: [Français](https://github.com/avajs/ava-docs/tree/master/fr_FR/related/babel/README.md)
 
-Adds [Babel 7](https://babeljs.io) support to [AVA](https://avajs.dev) so you can use the latest JavaScript syntax in your tests. We do this by compiling test and helper files using our `@ava/babel/stage-4` preset. We also use a [second preset, `@ava/transform-test-files`](https://github.com/avajs/babel-preset-transform-test-files) to enable [enhanced assertion messages](https://github.com/avajs/ava/blob/master/docs/03-assertions.md#enhanced-assertion-messages) and detect improper use of `t.throws()` assertions.
+Adds [Babel 7](https://babeljs.io) support to [AVA](https://avajs.dev) so you can use the latest JavaScript syntax in your tests. We do this by compiling test and helper files using our `@ava/babel/stage-4` preset. We also use a second preset, `@ava/babel/transform-test-files` to enable [enhanced assertion messages](https://github.com/avajs/ava/blob/master/docs/03-assertions.md#enhanced-assertion-messages) and detect improper use of `t.throws()` assertions.
 
-By default our Babel pipeline is applied to test and helper files ending in `.cjs` and `.js`. If your project uses Babel then we'll automatically compile these files using your project's Babel configuration. The `@ava/transform-helper-files` preset is applied first, and the `@ava/babel/stage-4` last.
+By default our Babel pipeline is applied to test and helper files ending in `.cjs` and `.js`. If your project uses Babel then we'll automatically compile these files using your project's Babel configuration. The `@ava/babel/transform-helper-files` preset is applied first, and the `@ava/babel/stage-4` last.
 
 If you are using Babel for your source files then you must also [configure source compilation](#compile-sources).
 
