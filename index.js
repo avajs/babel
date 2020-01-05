@@ -308,7 +308,7 @@ module.exports = ({negotiateProtocol}) => {
 			const {
 				compileAsTests = [],
 				compileEnhancements = true,
-				extensions = ['js'],
+				extensions = ['cjs', 'js'],
 				testOptions
 			} = config;
 
