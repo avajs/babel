@@ -7,4 +7,4 @@ const provider = makeProvider({
 	}
 });
 
-provider.worker({state: JSON.parse(process.argv[3])}).load('./esm-import', {requireFn: require});
+provider.worker({state: JSON.parse(process.argv[3])}).load(`./${process.argv[4]}`, {requireFn: require});

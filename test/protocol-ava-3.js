@@ -1,7 +1,7 @@
-const os = require('os');
 const path = require('path');
 const test = require('ava');
 const execa = require('execa');
+const tempy = require('tempy');
 const pkg = require('../package.json');
 const makeProvider = require('..');
 
@@ -84,33 +84,42 @@ test('main() extensions: always returns new arrays', withProvider, (t, provider)
 });
 
 const compile = async provider => {
-	const cacheDir = os.tmpdir();
-	const testFile = path.join(__dirname, 'fixtures/esm-export.js');
-	const helperFile = path.join(__dirname, 'fixtures/esm-import.js');
+	const cacheDir = tempy.directory();
+	const cjsTestFile = path.join(__dirname, 'fixtures/esm-import.cjs');
+	const jsTestFile = path.join(__dirname, 'fixtures/esm-import.js');
+	const helperFile = path.join(__dirname, 'fixtures/esm-export.js');
 
 	return {
 		cacheDir,
-		testFile,
+		cjsTestFile,
+		jsTestFile,
 		helperFile,
 		state: await provider.main({
 			config: {
-				compileAsTests: ['fixtures/esm-import.js']
+				compileAsTests: ['fixtures/esm-export.js']
 			}
 		}).compile({
 			cacheDir,
-			files: [testFile]
+			files: [cjsTestFile, jsTestFile]
 		})
 	};
 };
 
 test('main() compile: compiles all files', withProvider, async (t, provider) => {
-	const {cacheDir, testFile, helperFile, state} = await compile(provider);
-	t.assert(state[testFile].startsWith(cacheDir));
-	t.assert(state[helperFile].startsWith(cacheDir));
+	const {cacheDir, cjsTestFile, jsTestFile, helperFile, state} = await compile(provider);
+	t.assert(state.lookup[cjsTestFile].startsWith(cacheDir));
+	t.assert(state.lookup[jsTestFile].startsWith(cacheDir));
+	t.assert(state.lookup[helperFile].startsWith(cacheDir));
 });
 
 test('worker(): load compiled files', withProvider, async (t, provider) => {
 	const {state} = await compile(provider);
-	const {stdout} = await execa.node(path.join(__dirname, 'fixtures/install-and-load'), ['ava-3-pre', JSON.stringify(state)]);
-	t.snapshot(stdout);
+	for await (const file of ['esm-import.cjs', 'esm-import.js']) {
+		const {stdout, stderr} = await execa.node(path.join(__dirname, 'fixtures/install-and-load'), ['ava-3-pre', JSON.stringify(state), file]);
+		if (stderr.length > 0) {
+			t.log(stderr);
+		}
+
+		t.snapshot(stdout, file);
+	}
 });
