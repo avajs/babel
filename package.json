@@ -26,10 +26,9 @@
   "dependencies": {
     "@babel/core": "^7.7.7",
     "@babel/generator": "^7.7.7",
-    "@babel/plugin-proposal-async-generator-functions": "^7.7.4",
     "@babel/plugin-proposal-dynamic-import": "^7.7.4",
-    "@babel/plugin-proposal-optional-catch-binding": "^7.7.4",
-    "@babel/plugin-transform-dotall-regex": "^7.7.7",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.7.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.7.5",
     "@babel/plugin-transform-modules-commonjs": "^7.7.5",
     "babel-plugin-espower": "^3.0.1",
     "concordance": "^4.0.0",
