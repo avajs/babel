@@ -69,8 +69,8 @@ test('main() config validation: babelConfig may be an empty object', withProvide
 	t.notThrows(() => provider.main({config: {}}));
 });
 
-test('main() extensions: defaults to [\'js\']', withProvider, (t, provider) => {
-	t.deepEqual(provider.main({config: true}).extensions, ['js']);
+test('main() extensions: defaults to [\'cjs\', \'js\']', withProvider, (t, provider) => {
+	t.deepEqual(provider.main({config: true}).extensions, ['cjs', 'js']);
 });
 
 test('main() extensions: returns configured extensions', withProvider, (t, provider) => {
