@@ -330,21 +330,28 @@ module.exports = ({negotiateProtocol}) => {
 					const additionalFiles = additionalPatterns.length > 0 ? await protocol.findFiles({extensions, patterns: additionalPatterns}) : [];
 
 					let compiledAnything = false;
-					const state = {};
+					const lookup = {};
 					for (const file of [...files, ...additionalFiles]) {
 						if (!testFileExtension.test(file)) {
 							continue;
 						}
 
 						try {
-							state[file] = compileFile(file);
+							lookup[file] = compileFile(file);
 							compiledAnything = true;
 						} catch (error) {
 							throw Object.assign(error, {file});
 						}
 					}
 
-					return compiledAnything ? state : null;
+					if (!compiledAnything) {
+						return null;
+					}
+
+					return {
+						extensions: extensions.slice(),
+						lookup
+					};
 				},
 
 				get extensions() {
@@ -354,11 +361,12 @@ module.exports = ({negotiateProtocol}) => {
 		},
 
 		worker({state}) {
-			installSourceMapSupport(state);
+			installSourceMapSupport(state.lookup);
 
-			installPrecompiler(filename => {
-				return Reflect.has(state, filename) ? fs.readFileSync(state[filename], 'utf8') : null;
-			});
+			const precompile = filename => Reflect.has(state.lookup, filename) ? fs.readFileSync(state.lookup[filename], 'utf8') : null;
+			for (const ext of state.extensions) {
+				installPrecompiler(precompile, `.${ext}`);
+			}
 
 			return {
 				canLoad(ref) {
