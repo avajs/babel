@@ -1,1 +1,15 @@
-module.exports = require('@ava/babel-preset-stage-4');
+'use strict';
+module.exports = (api, options) => {
+	const transformModules = !options || options.modules !== false;
+	const plugins = require('./stage-4-plugins/best-match')
+		.filter(module => {
+			if (transformModules) {
+				return true;
+			}
+
+			return module !== '@babel/plugin-transform-modules-commonjs' && module !== '@babel/plugin-proposal-dynamic-import';
+		})
+		.map(module => require(module).default);
+
+	return {plugins};
+};

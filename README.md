@@ -2,9 +2,9 @@
 
 Translations: [Français](https://github.com/avajs/ava-docs/tree/master/fr_FR/related/babel/README.md)
 
-Adds [Babel 7](https://babeljs.io) support to [AVA](https://avajs.dev) so you can use the latest JavaScript syntax in your tests. We do this by compiling test and helper files using our [`@ava/stage-4`](https://github.com/avajs/babel-preset-stage-4) preset. We also use a [second preset, `@ava/transform-test-files`](https://github.com/avajs/babel-preset-transform-test-files) to enable [enhanced assertion messages](https://github.com/avajs/ava/blob/master/docs/03-assertions.md#enhanced-assertion-messages) and detect improper use of `t.throws()` assertions.
+Adds [Babel 7](https://babeljs.io) support to [AVA](https://avajs.dev) so you can use the latest JavaScript syntax in your tests. We do this by compiling test and helper files using our `@ava/babel/stage-4` preset. We also use a [second preset, `@ava/transform-test-files`](https://github.com/avajs/babel-preset-transform-test-files) to enable [enhanced assertion messages](https://github.com/avajs/ava/blob/master/docs/03-assertions.md#enhanced-assertion-messages) and detect improper use of `t.throws()` assertions.
 
-By default our Babel pipeline is applied to test and helper files ending in `.cjs` and `.js`. If your project uses Babel then we'll automatically compile these files using your project's Babel configuration. The `@ava/transform-helper-files` preset is applied first, and the `@ava/stage-4` last.
+By default our Babel pipeline is applied to test and helper files ending in `.cjs` and `.js`. If your project uses Babel then we'll automatically compile these files using your project's Babel configuration. The `@ava/transform-helper-files` preset is applied first, and the `@ava/babel/stage-4` last.
 
 If you are using Babel for your source files then you must also [configure source compilation](#compile-sources).
 
@@ -270,4 +270,72 @@ Install `babel-plugin-webpack-alias-7` as a dev-dependency. Then add the plugin 
 }
 ```
 
+## `@ava/babel/stage-4`
+
+Aspires to bring [finished ECMAScript proposals](https://github.com/tc39/proposals/blob/master/finished-proposals.md) to AVA's test and helper files.
+
+Efficiently applies the minimum of transforms to run the latest JavaScript syntax on Node.js 8, 10 and 12.
+
+Built-ins are not added or extended, so features like Proxies, `Array.prototype.includes` or `String.prototype.padStart` will only be available if the Node.js version running the tests supports it. Consult [node.green] for details.
+
+Sometimes a particular feature is *mostly* implemented in Node.js. In that case transforms are not applied.
+
+Not all proposals can be supported via Babel transforms, see below for details. Babel may require "syntax" plugins in order to parse certain files. These plugins should be applied explicitly since this preset may not include them. If you use AVA's Babel compilation this is already taken care of.
+
+### Supported proposals
+
+| Proposal                                                                 | Supported
+| ------------------------------------------------------------------------ | ---------
+| [`Array.prototype.includes`][array-includes]                             | No
+| [`Object.values`/`Object.entries`][object-values-entries]                | No
+| [String padding][string-padding]                                         | No
+| [`Object.getOwnPropertyDescriptors`][object-gopds]                       | No
+| [Trailing commas in function parameter lists and calls][function-commas] | Yes
+| [Shared memory and atomics][atomics]                                     | No
+| [Lifting template literal restriction][template-literal-lift]            | No
+| [`s` (`dotAll`) flag for regular expressions][dot-all]                   | Yes
+| [RegExp named capture groups][named-groups]                              | No
+| [RegExp Lookbehind Assertions][lookbehind]                               | No
+| [RegExp Unicode Property Escapes][unicode-escapes]                       | No
+| [`Promise.prototype.finally`][finally]                                   | No
+| [Asynchronous Iteration][async-iteration]                                | Partially<sup>†</sup>
+| [Optional `catch` binding][optional-catch]                               | Yes
+| [JSON superset][json-superset]                                           | No
+| [`Symbol.prototype.description`][symbol-description]                     | No
+| [`Function.prototype.toString` revision][function-tostring-revision]     | No
+| [`Object.fromEntries`][object-fromentries]                               | No
+| [Well-formed `JSON.stringify`][well-formed-stringify]                    | No
+| [`String.prototype.{trimStart,trimEnd}`][string-left-right-trim]         | No
+| [`Array.prototype.{flat,flatMap}`][flatmap]                              | No
+| [`String.prototype.matchAll`][string-matchall]                           | No
+| [`import()`][dynamic-import]                                             | Yes
+| [`Promise.allSettled`][promise-allsettled]                               | No
+
+† [`@babel/plugin-proposal-async-generator-functions`](https://www.npmjs.com/package/@babel/plugin-proposal-async-generator-functions) relies on `Symbol.asyncIterator`, which AVA does not polyfill for you.
+
+[array-includes]: https://github.com/tc39/Array.prototype.includes
+[async-iteration]: https://github.com/tc39/proposal-async-iteration
+[atomics]: https://github.com/tc39/ecmascript_sharedmem
 [Babel options]: https://babeljs.io/docs/en/options
+[dot-all]: https://github.com/tc39/proposal-regexp-dotall-flag
+[dynamic-import]: https://github.com/tc39/proposal-dynamic-import
+[finally]: https://github.com/tc39/proposal-promise-finally
+[flatmap]: https://github.com/tc39/proposal-flatMap
+[function-commas]: https://github.com/tc39/proposal-trailing-function-commas
+[function-tostring-revision]: https://github.com/tc39/Function-prototype-toString-revision
+[json-superset]: https://github.com/tc39/proposal-json-superset
+[lookbehind]: https://github.com/tc39/proposal-regexp-lookbehind
+[named-groups]: https://github.com/tc39/proposal-regexp-named-groups
+[node.green]: http://node.green
+[object-fromentries]: https://github.com/tc39/proposal-object-from-entries
+[object-gopds]: https://github.com/ljharb/proposal-object-getownpropertydescriptors
+[object-values-entries]: https://github.com/tc39/proposal-object-values-entries
+[optional-catch]: https://github.com/tc39/proposal-optional-catch-binding
+[promise-allsettled]: https://github.com/tc39/proposal-promise-allSettled
+[string-left-right-trim]: https://github.com/tc39/proposal-string-left-right-trim
+[string-matchall]: https://github.com/tc39/String.prototype.matchAll
+[string-padding]: https://github.com/tc39/proposal-string-pad-start-end
+[symbol-description]: https://github.com/tc39/proposal-Symbol-description
+[template-literal-lift]: https://github.com/tc39/proposal-template-literal-revision
+[unicode-escapes]: https://github.com/tc39/proposal-regexp-unicode-property-escapes
+[well-formed-stringify]: https://github.com/tc39/proposal-well-formed-stringify
