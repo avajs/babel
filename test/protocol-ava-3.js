@@ -6,11 +6,12 @@ const pkg = require('../package.json');
 const makeProvider = require('..');
 
 const withProvider = (t, run) => run(t, makeProvider({
-	negotiateProtocol(identifiers) {
-		t.true(identifiers.includes('1'));
+	negotiateProtocol(identifiers, {version}) {
+		t.true(identifiers.includes('ava-3-pre'));
+		t.is(version, pkg.version);
 		return {
 			ava: {version: '2.4.0'},
-			identifier: '1',
+			identifier: 'ava-3-pre',
 			normalizeGlobPatterns: patterns => patterns,
 			async findFiles({patterns}) {
 				return patterns.map(file => path.join(__dirname, file));
@@ -26,7 +27,7 @@ const validateConfig = (t, provider, config) => {
 	t.snapshot(error);
 };
 
-test('negotiates 1 protocol', withProvider, t => t.plan(1));
+test('negotiates ava-3 protocol', withProvider, t => t.plan(2));
 
 test('main() config validation: throw when babelConfig is not true or a plain object', withProvider, (t, provider) => {
 	validateConfig(t, provider, false);
@@ -110,6 +111,6 @@ test('main() compile: compiles all files', withProvider, async (t, provider) => 
 
 test('worker(): load compiled files', withProvider, async (t, provider) => {
 	const {state} = await compile(provider);
-	const {stdout} = await execa.node(path.join(__dirname, 'fixtures/install-and-load'), ['1', JSON.stringify(state)]);
+	const {stdout} = await execa.node(path.join(__dirname, 'fixtures/install-and-load'), ['ava-3-pre', JSON.stringify(state)]);
 	t.snapshot(stdout);
 });
