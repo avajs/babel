@@ -33,10 +33,8 @@ function buildsCorrectPreset(t, node, v8, mapping) {
 buildsCorrectPreset.title = (_, node) => `builds correct preset for Node.js ${node}`;
 
 for (const [node, v8, mapping] of [
-	['not-v8-at-all', null, '../stage-4-plugins/v8-6.1.json'],
-	['8.9.4', '6.1.534.50', '../stage-4-plugins/v8-6.1.json'],
-	['8.16.0', '6.2.414.77', '../stage-4-plugins/v8-6.2.json'],
-	['10.0.0', '6.6.346.24-node.5', '../stage-4-plugins/v8-6.6.json']
+	['not-v8-at-all', null, '../stage-4-plugins/v8-6.8.json'],
+	['10.18.0', '6.8.275.32-node.54', '../stage-4-plugins/v8-6.8.json']
 ]) {
 	test(buildsCorrectPreset, node, v8, mapping);
 }

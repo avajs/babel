@@ -274,7 +274,7 @@ Install `babel-plugin-webpack-alias-7` as a dev-dependency. Then add the plugin 
 
 Aspires to bring [finished ECMAScript proposals](https://github.com/tc39/proposals/blob/master/finished-proposals.md) to AVA's test and helper files.
 
-Efficiently applies the minimum of transforms to run the latest JavaScript syntax on Node.js 8, 10 and 12.
+Efficiently applies the minimum of transforms to run the latest JavaScript syntax on Node.js 10 and 12.
 
 Built-ins are not added or extended, so features like Proxies, `Array.prototype.includes` or `String.prototype.padStart` will only be available if the Node.js version running the tests supports it. Consult [node.green] for details.
 
@@ -310,6 +310,8 @@ Not all proposals can be supported via Babel transforms, see below for details. 
 | [`String.prototype.matchAll`][string-matchall]                           | No
 | [`import()`][dynamic-import]                                             | Yes
 | [`Promise.allSettled`][promise-allsettled]                               | No
+| [Optional Chaining][chaining]                                            | Yes
+| [Nullish coalescing Operator][nullish-coalescing]                        | Yes
 
 † [`@babel/plugin-proposal-async-generator-functions`](https://www.npmjs.com/package/@babel/plugin-proposal-async-generator-functions) relies on `Symbol.asyncIterator`, which AVA does not polyfill for you.
 
@@ -317,6 +319,7 @@ Not all proposals can be supported via Babel transforms, see below for details. 
 [async-iteration]: https://github.com/tc39/proposal-async-iteration
 [atomics]: https://github.com/tc39/ecmascript_sharedmem
 [Babel options]: https://babeljs.io/docs/en/options
+[chaining]: https://github.com/tc39/proposal-optional-chaining
 [dot-all]: https://github.com/tc39/proposal-regexp-dotall-flag
 [dynamic-import]: https://github.com/tc39/proposal-dynamic-import
 [finally]: https://github.com/tc39/proposal-promise-finally
@@ -327,6 +330,7 @@ Not all proposals can be supported via Babel transforms, see below for details. 
 [lookbehind]: https://github.com/tc39/proposal-regexp-lookbehind
 [named-groups]: https://github.com/tc39/proposal-regexp-named-groups
 [node.green]: http://node.green
+[nullish-coalescing]: https://github.com/tc39/proposal-nullish-coalescing
 [object-fromentries]: https://github.com/tc39/proposal-object-from-entries
 [object-gopds]: https://github.com/ljharb/proposal-object-getownpropertydescriptors
 [object-values-entries]: https://github.com/tc39/proposal-object-values-entries
