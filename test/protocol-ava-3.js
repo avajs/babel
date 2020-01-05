@@ -115,7 +115,11 @@ test('main() compile: compiles all files', withProvider, async (t, provider) => 
 test('worker(): load compiled files', withProvider, async (t, provider) => {
 	const {state} = await compile(provider);
 	for await (const file of ['esm-import.cjs', 'esm-import.js']) {
-		const {stdout, stderr} = await execa.node(path.join(__dirname, 'fixtures/install-and-load'), ['ava-3-pre', JSON.stringify(state), file]);
+		const {stdout, stderr} = await execa.node(
+			path.join(__dirname, 'fixtures/install-and-load'),
+			['ava-3-pre', JSON.stringify(state), file],
+			{cwd: path.join(__dirname, 'fixtures')}
+		);
 		if (stderr.length > 0) {
 			t.log(stderr);
 		}

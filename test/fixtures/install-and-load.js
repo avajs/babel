@@ -7,7 +7,12 @@ const provider = makeProvider({
 	}
 });
 
-provider.worker({
+const worker = provider.worker({
 	extensionsToLoadAsModules: [],
 	state: JSON.parse(process.argv[3])
-}).load(`./${process.argv[4]}`, {requireFn: require});
+});
+
+const ref = path.resolve(process.argv[4]);
+if (worker.canLoad(ref)) {
+	worker.load(ref, {requireFn: require});
+}
