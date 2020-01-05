@@ -360,7 +360,7 @@ module.exports = ({negotiateProtocol}) => {
 			};
 		},
 
-		worker({state}) {
+		worker({extensionsToLoadAsModules, state}) {
 			installSourceMapSupport(state.lookup);
 
 			const precompile = filename => Reflect.has(state.lookup, filename) ? fs.readFileSync(state.lookup[filename], 'utf8') : null;
@@ -374,6 +374,12 @@ module.exports = ({negotiateProtocol}) => {
 				},
 
 				load(ref, {requireFn}) {
+					for (const extension of extensionsToLoadAsModules) {
+						if (ref.endsWith(`.${extension}`)) {
+							throw new Error('@ava/babel cannot yet load ESM files');
+						}
+					}
+
 					// Let the precompiler hook resolve the compiled source.
 					return requireFn(ref);
 				},
