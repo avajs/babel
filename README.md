@@ -16,7 +16,7 @@ Add this package to your project:
 npm install --save-dev @ava/babel
 ```
 
-Then, enable Babel support either in `package.json` or `ava.config.js`:
+Then, enable Babel support either in `package.json` or `ava.config.*`:
 
 **`package.json`:**
 
@@ -30,7 +30,7 @@ Then, enable Babel support either in `package.json` or `ava.config.js`:
 
 ## Customize how AVA compiles your test files
 
-You can override the default Babel configuration AVA uses for test file compilation in `package.json` or `ava.config.js`. For example, the configuration below adds support for JSX syntax and stage 3 features.
+You can override the default Babel configuration AVA uses for test file compilation in `package.json` or `ava.config.*`. For example, the configuration below adds support for JSX syntax and stage 3 features.
 
 **`package.json`:**
 
