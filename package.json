@@ -8,6 +8,7 @@
   "files": [
     "index.js",
     "stage-4.js",
+    "throws-helper.js",
     "stage-4-plugins"
   ],
   "author": "Mark Wubben (https://novemberborn.net)",
