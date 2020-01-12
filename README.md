@@ -53,7 +53,7 @@ All [Babel options] are allowed inside the `testOptions` object.
 
 By default, only test files are compiled. You can compile additional files as tests by providing glob patterns:
 
-**`package.sjon`:**
+**`package.json`:**
 
 ```json
 {
