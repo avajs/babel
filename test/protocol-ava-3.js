@@ -127,3 +127,18 @@ test('worker(): load compiled files', withProvider, async (t, provider) => {
 		t.snapshot(stdout, file);
 	}
 });
+
+test('supports all stage-4 syntax', withProvider, async (t, provider) => {
+	await t.notThrowsAsync(provider.main({
+		config: {
+			testOptions: {
+				presets: [
+					[`module:${require.resolve('../stage-4')}`, false]
+				]
+			}
+		}
+	}).compile({
+		cacheDir: tempy.directory(),
+		files: [path.join(__dirname, 'fixtures/syntax.js')]
+	}));
+});

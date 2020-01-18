@@ -66,5 +66,8 @@
       "lcov",
       "text"
     ]
+  },
+  "xo": {
+    "ignore": "test/fixtures/syntax.js"
   }
 }
