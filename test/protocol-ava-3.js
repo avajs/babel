@@ -7,11 +7,11 @@ const makeProvider = require('..');
 
 const withProvider = (t, run) => run(t, makeProvider({
 	negotiateProtocol(identifiers, {version}) {
-		t.true(identifiers.includes('ava-3-pre'));
+		t.true(identifiers.includes('ava-3'));
 		t.is(version, pkg.version);
 		return {
-			ava: {version: '2.4.0'},
-			identifier: 'ava-3-pre',
+			ava: {version: '3.0.0'},
+			identifier: 'ava-3',
 			normalizeGlobPatterns: patterns => patterns,
 			async findFiles({patterns}) {
 				return patterns.map(file => path.join(__dirname, file));
@@ -117,7 +117,7 @@ test('worker(): load compiled files', withProvider, async (t, provider) => {
 	for await (const file of ['esm-import.cjs', 'esm-import.js']) {
 		const {stdout, stderr} = await execa.node(
 			path.join(__dirname, 'fixtures/install-and-load'),
-			['ava-3-pre', JSON.stringify(state), file],
+			['ava-3', JSON.stringify(state), file],
 			{cwd: path.join(__dirname, 'fixtures')}
 		);
 		if (stderr.length > 0) {

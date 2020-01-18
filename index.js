@@ -273,7 +273,7 @@ function isValidPatterns(patterns) {
 }
 
 module.exports = ({negotiateProtocol}) => {
-	const protocol = negotiateProtocol(['ava-3-pre'], {version: pkg.version});
+	const protocol = negotiateProtocol(['ava-3'], {version: pkg.version});
 	if (protocol === null) {
 		return;
 	}
