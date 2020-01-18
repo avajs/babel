@@ -39,14 +39,10 @@ function enableParserPlugins(api) {
 		name: 'ava-babel-pipeline-enable-parser-plugins',
 		manipulateOptions(_, parserOpts) {
 			parserOpts.plugins.push(
-				'asyncGenerators',
 				'bigInt',
 				'classPrivateProperties',
 				'classProperties',
-				'dynamicImport',
-				'numericSeparator',
-				'objectRestSpread',
-				'optionalCatchBinding'
+				'numericSeparator'
 			);
 		}
 	};
