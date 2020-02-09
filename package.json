@@ -24,6 +24,7 @@
     "test": "xo && nyc ava"
   },
   "dependencies": {
+    "@ava/require-precompiled": "^1.0.0",
     "@babel/core": "^7.8.4",
     "@babel/generator": "^7.8.4",
     "@babel/plugin-proposal-dynamic-import": "^7.8.3",
@@ -41,7 +42,6 @@
     "md5-hex": "^3.0.1",
     "package-hash": "^4.0.0",
     "pkg-conf": "^3.1.0",
-    "require-precompiled": "^0.1.0",
     "source-map-support": "^0.5.16",
     "strip-bom-buf": "^2.0.0",
     "write-file-atomic": "^3.0.1"
