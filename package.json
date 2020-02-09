@@ -68,6 +68,9 @@
     ]
   },
   "xo": {
-    "ignore": "test/fixtures/syntax.js"
+    "ignore": "test/fixtures/syntax.js",
+    "rules": {
+      "import/order": "off"
+    }
   }
 }
