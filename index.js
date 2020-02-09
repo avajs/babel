@@ -1,6 +1,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
+const installPrecompiler = require('@ava/require-precompiled');
 const babel = require('@babel/core');
 const {default: generate} = require('@babel/generator');
 const concordance = require('concordance');
@@ -12,7 +13,6 @@ const isPlainObject = require('is-plain-object');
 const md5Hex = require('md5-hex');
 const packageHash = require('package-hash');
 const pkgConf = require('pkg-conf');
-const installPrecompiler = require('require-precompiled');
 const sourceMapSupport = require('source-map-support');
 const stripBomBuf = require('strip-bom-buf');
 const writeFileAtomic = require('write-file-atomic');
