@@ -30,7 +30,7 @@ Then, enable Babel support either in `package.json` or `ava.config.*`:
 
 ## Customize how AVA compiles your test files
 
-You can override the default Babel configuration AVA uses for test file compilation in `package.json` or `ava.config.*`. For example, the configuration below adds support for JSX syntax and stage 3 features.
+You can override the default Babel configuration AVA uses for test file compilation in `package.json` or `ava.config.*`. For example, the configuration below adds support for JSX syntax and [preset-env](https://babeljs.io/docs/en/babel-preset-env).
 
 **`package.json`:**
 
@@ -38,9 +38,13 @@ You can override the default Babel configuration AVA uses for test file compilat
 {
 	"ava": {
 		"babel": {
+			"extensions": [
+				"js",
+				"jsx"
+			],
 			"testOptions": {
 				"plugins": ["@babel/plugin-syntax-jsx"],
-				"presets": ["@babel/preset-stage-3"]
+				"presets": ["@babel/preset-env"]
 			}
 		}
 	}
