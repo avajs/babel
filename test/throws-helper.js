@@ -1,6 +1,6 @@
 const test = require('ava');
 const babel = require('@babel/core');
-const fn = require('../throws-helper');
+const fn = require('../throws-helper.js');
 
 function transform(input) {
 	return babel.transform(input, {

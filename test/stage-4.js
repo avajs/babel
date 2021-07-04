@@ -25,9 +25,9 @@ const buildPreset = (node, v8, options) => proxyquire('../stage-4', {
 
 function buildsCorrectPreset(t, node, v8, mapping) {
 	const {plugins} = buildPreset(node, v8);
-	require(mapping).forEach((module, index) => {
+	for (const [index, module] of require(mapping).entries()) {
 		t.is(require(module).default, plugins[index], `${module} at index ${index}`);
-	});
+	}
 }
 
 buildsCorrectPreset.title = (_, node) => `builds correct preset for Node.js ${node}`;

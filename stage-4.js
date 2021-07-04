@@ -1,7 +1,6 @@
-'use strict';
 module.exports = (api, options) => {
 	const transformModules = !options || options.modules !== false;
-	const plugins = require('./stage-4-plugins/best-match')
+	const plugins = require('./stage-4-plugins/best-match.js')
 		.filter(module => {
 			if (transformModules) {
 				return true;
