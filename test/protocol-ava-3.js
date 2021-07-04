@@ -124,7 +124,7 @@ test('worker(): load compiled files', withProvider, async (t, provider) => {
 			t.log(stderr);
 		}
 
-		t.snapshot(stdout, file);
+		t.snapshot(stdout, `${file}`);
 	}
 });
 

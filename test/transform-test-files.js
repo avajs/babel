@@ -2,8 +2,8 @@ const {runInNewContext} = require('vm');
 const test = require('ava');
 const babel = require('@babel/core');
 const empower = require('empower-core');
-const throwsHelper = require('../throws-helper');
-const buildPreset = require('../transform-test-files');
+const throwsHelper = require('../throws-helper.js');
+const buildPreset = require('../transform-test-files.js');
 
 const ESPOWER_PATTERNS = require('../espower-patterns.json');
 
@@ -27,12 +27,9 @@ test('resulting preset transforms assertion patterns', t => {
 
 	const appliedPatterns = [];
 	// Create a stub assertion object that can be enhanced using empower-core
-	const assert = ESPOWER_PATTERNS
-		.map(p => /^t\.(.+)\(/.exec(p)[1]) // eslint-disable-line prefer-named-capture-group
-		.reduce((assert, name) => {
-			assert[name] = () => {};
-			return assert;
-		}, {});
+	const assert = Object.fromEntries(ESPOWER_PATTERNS
+		.map(p => /^t\.(.+)\(/.exec(p)[1])
+		.map(name => [name, () => {}]));
 
 	runInNewContext(code, {
 		t: empower(assert, {

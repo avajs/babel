@@ -1,5 +1,5 @@
 const path = require('path');
-const makeProvider = require('../..');
+const makeProvider = require('../../index.js');
 
 const provider = makeProvider({
 	negotiateProtocol() {

@@ -1,1 +1,2 @@
-export default 'value from esm-export.js';
+const value = 'value from esm-export.js';
+export default value;

@@ -1,4 +1,3 @@
-'use strict';
 const fs = require('fs');
 const path = require('path');
 const installPrecompiler = require('@ava/require-precompiled');
@@ -9,7 +8,7 @@ const convertSourceMap = require('convert-source-map');
 const dotProp = require('dot-prop');
 const escapeStringRegexp = require('escape-string-regexp');
 const findUp = require('find-up');
-const isPlainObject = require('is-plain-object');
+const {isPlainObject} = require('is-plain-object');
 const md5Hex = require('md5-hex');
 const packageHash = require('package-hash');
 const pkgConf = require('pkg-conf');
@@ -37,8 +36,8 @@ function enableParserPlugins(api) {
 
 	return {
 		name: 'ava-babel-pipeline-enable-parser-plugins',
-		manipulateOptions(_, parserOpts) {
-			parserOpts.plugins.push(
+		manipulateOptions(_, parserOptions) {
+			parserOptions.plugins.push(
 				'bigInt',
 				'classPrivateProperties',
 				'classProperties',
@@ -77,13 +76,13 @@ function wantsStage4(babelOptions, projectDir) {
 		return true;
 	}
 
-	const stage4 = require('./stage-4');
-	return babelOptions.presets.every(arr => {
-		if (!Array.isArray(arr)) {
+	const stage4 = require('./stage-4.js');
+	return babelOptions.presets.every(array => {
+		if (!Array.isArray(array)) {
 			return true; // There aren't any preset options.
 		}
 
-		const [ref, options] = arr;
+		const [ref, options] = array;
 		// Require the preset to handle any aliasing that may be taking place.
 		const resolved = require(babel.resolvePreset(ref, projectDir));
 		return resolved !== stage4 || options !== false;
@@ -119,12 +118,7 @@ function hashPartialConfig({babelrc, config, options: {plugins, presets}}, proje
 		}
 
 		const [firstComponent] = path.relative(projectDir, filename).split(path.sep);
-		let hash;
-		if (firstComponent === 'node_modules') {
-			hash = packageHash.sync(findUp.sync('package.json', {cwd: path.dirname(filename)}));
-		} else {
-			hash = md5Hex(stripBomBuf(fs.readFileSync(filename)));
-		}
+		const hash = firstComponent === 'node_modules' ? packageHash.sync(findUp.sync('package.json', {cwd: path.dirname(filename)})) : md5Hex(stripBomBuf(fs.readFileSync(filename)));
 
 		pluginAndPresetHashes.set(filename, hash);
 		inputs.push(hash);
@@ -182,12 +176,12 @@ function createCompileFn({babelOptions, cacheDir, compileEnhancements, projectDi
 		const {options: partialOptions} = partialConfig;
 		partialOptions.plugins.push(enableParserPlugins);
 
-		if (ensureStage4 && !partialOptions.presets.some(containsStage4)) {
+		if (ensureStage4 && !partialOptions.presets.some(preset => containsStage4(preset))) {
 			// Apply last.
 			partialOptions.presets.unshift(createConfigItem('./stage-4', 'preset'));
 		}
 
-		if (compileEnhancements && !partialOptions.presets.some(containsTransformTestFiles)) {
+		if (compileEnhancements && !partialOptions.presets.some(preset => containsTransformTestFiles(preset))) {
 			// Apply first.
 			partialOptions.presets.push(createConfigItem('./transform-test-files', 'preset', {powerAssert: true}));
 		}
@@ -344,13 +338,13 @@ module.exports = ({negotiateProtocol}) => {
 					}
 
 					return {
-						extensions: extensions.slice(),
+						extensions: [...extensions],
 						lookup
 					};
 				},
 
 				get extensions() {
-					return extensions.slice();
+					return [...extensions];
 				}
 			};
 		},

@@ -1,4 +1,3 @@
-'use strict';
 const ESPOWER_PATTERNS = require('./espower-patterns.json');
 
 module.exports = (context, options) => {
@@ -11,7 +10,7 @@ module.exports = (context, options) => {
 		}]);
 	}
 
-	plugins.push(require('./throws-helper'));
+	plugins.push(require('./throws-helper.js'));
 
 	return {plugins};
 };

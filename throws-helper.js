@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = babelCore => {
 	const t = babelCore.types;
 	const wrapArg = babelCore.template('(START(t, ASSERTION, FILE, LINE), END(t, ARG))');
