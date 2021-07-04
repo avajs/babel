@@ -267,7 +267,7 @@ function isValidPatterns(patterns) {
 }
 
 module.exports = ({negotiateProtocol}) => {
-	const protocol = negotiateProtocol(['ava-3'], {version: pkg.version});
+	const protocol = negotiateProtocol(['ava-3.2'], {version: pkg.version});
 	if (protocol === null) {
 		return;
 	}
@@ -345,6 +345,18 @@ module.exports = ({negotiateProtocol}) => {
 
 				get extensions() {
 					return [...extensions];
+				},
+
+				ignoreChange() {
+					return false;
+				},
+
+				resolveTestFile(testFile) {
+					return testFile;
+				},
+
+				updateGlobs(globs) {
+					return globs;
 				}
 			};
 		},

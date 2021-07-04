@@ -7,7 +7,7 @@ const makeProvider = require('..');
 
 const withProvider = (t, run) => run(t, makeProvider({
 	negotiateProtocol(identifiers, {version}) {
-		t.true(identifiers.includes('ava-3'));
+		t.true(identifiers.includes('ava-3.2'));
 		t.is(version, pkg.version);
 		return {
 			ava: {version: '3.0.0'},
