@@ -1,6 +1,6 @@
 # @ava/babel
 
-Translations: [Français](https://github.com/avajs/ava-docs/tree/master/fr_FR/related/babel/README.md)
+Translations: [Français](https://github.com/avajs/ava-docs/tree/main/fr_FR/related/babel/README.md)
 
 **Does not work with AVA 4.**
 
